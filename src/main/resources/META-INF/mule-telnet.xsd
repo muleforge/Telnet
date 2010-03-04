@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://www.mulesource.org/schema/mule/telnet/2.2"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:mule="http://www.mulesource.org/schema/mule/core/2.2"
+            xmlns:schemadoc="http://www.mulesource.org/schema/mule/schemadoc/2.2"
+            targetNamespace="http://www.mulesource.org/schema/mule/telnet/2.2"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.mulesource.org/schema/mule/core/2.2"
+                schemaLocation="http://www.mulesource.org/schema/mule/core/2.2/mule.xsd" />
+    <xsd:import namespace = "http://www.mulesource.org/schema/mule/schemadoc/2.2"
+                schemaLocation = "http://www.mulesource.org/schema/mule/schemadoc/2.2/mule-schemadoc.xsd"/>
+
+    <xsd:annotation>
+        <xsd:documentation>execute telnet command</xsd:documentation>
+        <xsd:appinfo>
+            <schemadoc:short-name>Telnet</schemadoc:short-name>
+            <schemadoc:page-title>Telnet Transport</schemadoc:page-title>
+            <schemadoc:transport-features
+            receiveEvents="false" dispatchEvents="false" responseEvents="true"
+                                          requestEvents="false"
+                                          transactions="false" streaming="false">
+                <schemadoc:inboundMEPs in-only="${receiver}" in-optional-out="true" in-out="true"/>
+                <schemadoc:outboundMEPs out-only="true" out-in="true" out-optional-in="true"/>
+            </schemadoc:transport-features>
+        </xsd:appinfo>
+    </xsd:annotation>
+
+    <xsd:element name="connector" type="telnetConnectorType" substitutionGroup="mule:abstract-connector">
+        <xsd:annotation>
+            <xsd:documentation>
+                execute telnet command
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+
+    <xsd:complexType name="telnetConnectorType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:connectorType">
+
+				<xsd:attribute name="host" type="mule:nonBlankString" use="required" >
+					<xsd:annotation>
+						<xsd:documentation>
+							host address or host name
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="port" type="mule:substitutablePortNumber" use="optional" default="23">
+					<xsd:annotation>
+						<xsd:documentation>
+							server port
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="loginId" type="mule:nonBlankString" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							login user id
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="password" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							login user password
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+
+				<xsd:attribute name="defaultTimeout" type="mule:substitutableInt" use="optional" default="30000">
+					<xsd:annotation>
+						<xsd:documentation>
+							Telnet default timeout
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="exitStatusCommand" type="mule:nonBlankString" use="optional" default="echo $?">
+					<xsd:annotation>
+						<xsd:documentation>
+							ex) echo $?
+	                    </xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!--
+    The following define endpoint elements for this transport. Attributes for the endpoint can be defined at the section
+    at the bottom
+    -->
+<!--    <xsd:element name="inbound-endpoint" type="inboundEndpointType" substitutionGroup="mule:abstract-inbound-endpoint"/>-->
+<!--    <xsd:complexType name="inboundEndpointType">-->
+<!--        <xsd:complexContent>-->
+<!--            <xsd:extension base="mule:inboundEndpointType">-->
+<!--                <xsd:attributeGroup ref="addressAttributes"/>-->
+<!--                <xsd:attributeGroup ref="propertyAttributes"/>-->
+<!--            </xsd:extension>-->
+<!--        </xsd:complexContent>-->
+<!--    </xsd:complexType>-->
+
+    <xsd:element name="outbound-endpoint" type="outboundEndpointType" substitutionGroup="mule:abstract-outbound-endpoint"/>
+    <xsd:complexType name="outboundEndpointType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:outboundEndpointType">
+                <xsd:attributeGroup ref="addressAttributes"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="endpoint" type="globalEndpointType" substitutionGroup="mule:abstract-global-endpoint"/>
+    <xsd:complexType name="globalEndpointType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:globalEndpointType">
+                <xsd:attributeGroup ref="addressAttributes"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:attributeGroup name="addressAttributes">
+    	<xsd:attribute name="telnet" fixed="SEND" use="required">
+    	    <xsd:simpleType>
+                <xsd:restriction base="xsd:NMTOKEN">
+                    <xsd:enumeration value="SEND"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+    	
+    	<xsd:attribute name="sudoPassword" type="mule:nonBlankString" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					sudo command passwrod
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="useSudo" type="mule:substitutableBoolean"
+			use="optional" >
+			<xsd:annotation>
+				<xsd:documentation>
+					weather to execute on sudo.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="waitTime" type="mule:substitutableInt" use="optional" default="2000">
+		</xsd:attribute>
+    </xsd:attributeGroup>
+</xsd:schema>
