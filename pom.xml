@@ -6,7 +6,7 @@
 	<artifactId>mule-transport-telnet</artifactId>
 	<packaging>jar</packaging>
 	<name>Mule Telnet Transport</name>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<description>execute telnet command</description>
 
 	<licenses>
@@ -55,8 +55,8 @@
     </ciManagement>
 
     <scm>
-        <connection>scm:svn:http://svn.muleforge.org/telnet/tags/mule-transport-telnet-1.0.0</connection>
-        <developerConnection>scm:svn:https://svn.muleforge.org/telnet/tags/mule-transport-telnet-1.0.0</developerConnection>
+        <connection>scm:svn:http://svn.muleforge.org/telnet/trunk</connection>
+        <developerConnection>scm:svn:https://svn.muleforge.org/telnet/trunk</developerConnection>
         <!-- <url>http://svn.telnet.muleforge.org/</url> -->
     </scm>
 
