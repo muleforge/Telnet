@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:telnet="http://www.mulesource.org/schema/mule/telnet/2.2"
+	xmlns:stdio="http://www.mulesource.org/schema/mule/stdio/2.2" xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.2"
+	xsi:schemaLocation="
+		http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+		http://www.mulesource.org/schema/mule/telnet/2.2 http://www.mulesource.org/schema/mule/telnet/2.2/mule-telnet.xsd
+		http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd
+		http://www.mulesource.org/schema/mule/stdio/2.2 http://www.mulesource.org/schema/mule/stdio/2.2/mule-stdio.xsd
+		">
+	
+
+	<telnet:connector name="telnetConnector" host="localhost" defaultTimeout="60000"
+		port="23" loginId="user" password="password">
+		<dispatcher-threading-profile maxThreadsActive="1" doThreading="false"/>
+	</telnet:connector>
+		
+
+	<model name="TelnetTest">
+		<service name="TelnetService">
+			<inbound>
+				<vm:inbound-endpoint path="test" synchronous="true">
+					<response-transformers>
+						<object-to-string-transformer/>
+					</response-transformers>
+				</vm:inbound-endpoint>
+			</inbound>
+			<echo-component/>
+			<outbound>
+				<pass-through-router>
+					<telnet:outbound-endpoint name="telnet-out" telnet="SEND" useSudo="false" sudoPassword="sudopwd"
+					 synchronous="true"  responseTimeout="30000" />
+				</pass-through-router>
+			</outbound>
+		</service>
+	</model>
+
+</mule>
