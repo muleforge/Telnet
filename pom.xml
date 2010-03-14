@@ -6,7 +6,7 @@
 	<artifactId>mule-transport-telnet</artifactId>
 	<packaging>jar</packaging>
 	<name>Mule Telnet Transport</name>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<description>execute telnet command</description>
 
 	<licenses>
