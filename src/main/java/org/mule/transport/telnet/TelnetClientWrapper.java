@@ -121,7 +121,7 @@ public class TelnetClientWrapper
 
 		writeStream(userId + "\n");
 
-		readStream("Password: $");
+		readStream("(P|p)assword: $");
 
 		writeStream(password + "\n");
 
@@ -232,7 +232,8 @@ public class TelnetClientWrapper
 
 	protected boolean isSuccessLogin() throws Exception
 	{
-		String str = readStream("(Last login:.*\\n.*)$");
+//		String str = readStream("(Last login:.*\\n.*)$");
+		String str = readStream("((Last login:|\\*=+\\nWelcome to Microsoft Telnet Server).*\\n.*)$");
 		if (str == null)
 		{
 			return false;
@@ -268,8 +269,8 @@ public class TelnetClientWrapper
 
 		writeStream(command + "\n");
 		
-		// reading stream until matching prompt message. (e.g. "[user@localhost ~]$ ") 
-		result = readStream("((.*)(\\$|#)\\s*)$").split("\\n");
+		// reading stream until matching prompt message. (e.g. "[user@localhost ~]$ ", "C:\Documents and Settings\Administrator>") 
+		result = readStream("((.*)(\\$|#|>)\\s*)$").split("\\n");
 
 		logger.trace("skip string - [" + result[0] + "]");
 		
@@ -278,7 +279,7 @@ public class TelnetClientWrapper
 			sb.append(result[i]).append("\n");
 		}
 		
-		Pattern p2 = Pattern.compile("(\\$|#)\\s*$");
+		Pattern p2 = Pattern.compile("(\\$|#|>)\\s*$");
 		Matcher m2 = p2.matcher(result[result.length-1]);
 		if(!m2.find())
 		{
@@ -356,7 +357,7 @@ public class TelnetClientWrapper
 			return null;
 		}
 		
-		Pattern p = Pattern.compile("(\\$|#)\\s*" + command );
+		Pattern p = Pattern.compile("(\\$|#|>)\\s*" + command );
 
 		if(result.length > marker)
 		{
@@ -374,7 +375,7 @@ public class TelnetClientWrapper
 			
 		}
 		
-		Pattern p2 = Pattern.compile("(\\$|#)\\s*$");
+		Pattern p2 = Pattern.compile("(\\$|#|>)\\s*$");
 		Matcher m2 = p2.matcher(result[result.length-1]);
 		if(!m2.find())
 		{

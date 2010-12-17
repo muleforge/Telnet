@@ -80,7 +80,7 @@
 				<xsd:attribute name="exitStatusCommand" type="mule:nonBlankString" use="optional" default="echo $?">
 					<xsd:annotation>
 						<xsd:documentation>
-							ex) echo $?
+							ex) "echo $?" "echo %ERRORLEVEL%"
 	                    </xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>

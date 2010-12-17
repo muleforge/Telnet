@@ -9,7 +9,7 @@
 		http://www.mulesource.org/schema/mule/stdio/2.2 http://www.mulesource.org/schema/mule/stdio/2.2/mule-stdio.xsd
 		">
 	
-
+	<!-- if you want to connect Windows Telnet Server, please set exitStatusCommand="echo %ERRORLEVEL%" -->
 	<telnet:connector name="telnetConnector" host="localhost" defaultTimeout="60000"
 		port="23" loginId="user" password="password">
 		<dispatcher-threading-profile maxThreadsActive="1" doThreading="false"/>
@@ -29,7 +29,7 @@
 			<outbound>
 				<pass-through-router>
 					<telnet:outbound-endpoint name="telnet-out" telnet="SEND" useSudo="false" sudoPassword="sudopwd"
-					 synchronous="true"  responseTimeout="30000" />
+					 synchronous="true"  responseTimeout="50000" />
 				</pass-through-router>
 			</outbound>
 		</service>
