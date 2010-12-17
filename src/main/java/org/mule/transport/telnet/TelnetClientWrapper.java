@@ -233,7 +233,7 @@ public class TelnetClientWrapper
 	protected boolean isSuccessLogin() throws Exception
 	{
 //		String str = readStream("(Last login:.*\\n.*)$");
-		String str = readStream("((Last login:|\\*=+\\nWelcome to Microsoft Telnet Server).*\\n.*)$");
+		String str = readStream("((Last login:|\\*=+\\n.*Microsoft Telnet Server).*\\n.*)$");
 		if (str == null)
 		{
 			return false;
