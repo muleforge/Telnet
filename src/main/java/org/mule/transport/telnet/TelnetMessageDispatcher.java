@@ -18,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.mule.DefaultMuleMessage;
-import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.OutboundEndpoint;
@@ -208,6 +207,18 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 			payload = StringUtils.chomp(payload);
 			message.setPayload(payload);
 		}
+		
+		//TODO setting exception payload if exitStatus != 0.
+		/*
+		if(exitStatus != 0) 
+		{
+			logger.debug("#buildMuleMessage() : set exception payload");
+			DefaultExceptionPayload ep = new DefaultExceptionPayload(
+					new DispatchException(origilanMessage, getEndpoint(), 
+							new Exception("failed to execute command. exit status : " + exitStatus)));
+			message.setExceptionPayload(ep);
+		}
+		*/
 
 		return message;
 	}

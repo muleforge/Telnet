@@ -61,6 +61,7 @@ public class TelnetClientWrapper
 	private String encoding = "UTF-8";
 	private long startTime = System.currentTimeMillis();
 	private int waitTime;
+	private final String promptRegex = "(\\$|#|>)\\s*";
 
 	public TelnetClientWrapper(String host, int port, TelnetMessageDispatcher dispatcher, int waitTime) throws IOException
 	{
@@ -233,7 +234,7 @@ public class TelnetClientWrapper
 	protected boolean isSuccessLogin() throws Exception
 	{
 //		String str = readStream("(Last login:.*\\n.*)$");
-		String str = readStream("((Last login:|\\*=+\\n.*Microsoft Telnet Server).*\\n.*)$");
+		String str = readStream("(Last login:|.*Microsoft\\sTelnet\\sServer).*$");
 		if (str == null)
 		{
 			return false;
@@ -270,7 +271,7 @@ public class TelnetClientWrapper
 		writeStream(command + "\n");
 		
 		// reading stream until matching prompt message. (e.g. "[user@localhost ~]$ ", "C:\Documents and Settings\Administrator>") 
-		result = readStream("((.*)(\\$|#|>)\\s*)$").split("\\n");
+		result = readStream("((.*)" + promptRegex + ")$").split("\\n");
 
 		logger.trace("skip string - [" + result[0] + "]");
 		
@@ -279,7 +280,7 @@ public class TelnetClientWrapper
 			sb.append(result[i]).append("\n");
 		}
 		
-		Pattern p2 = Pattern.compile("(\\$|#|>)\\s*$");
+		Pattern p2 = Pattern.compile(promptRegex + "$");
 		Matcher m2 = p2.matcher(result[result.length-1]);
 		if(!m2.find())
 		{
@@ -296,7 +297,8 @@ public class TelnetClientWrapper
 		}
 		
 		setExitStatus();
-
+		
+		//Should there be return null if result == null?
 		return sb.toString();
 	}
 
@@ -357,7 +359,7 @@ public class TelnetClientWrapper
 			return null;
 		}
 		
-		Pattern p = Pattern.compile("(\\$|#|>)\\s*" + command );
+		Pattern p = Pattern.compile(promptRegex + command );
 
 		if(result.length > marker)
 		{
@@ -375,7 +377,7 @@ public class TelnetClientWrapper
 			
 		}
 		
-		Pattern p2 = Pattern.compile("(\\$|#|>)\\s*$");
+		Pattern p2 = Pattern.compile(promptRegex + "$");
 		Matcher m2 = p2.matcher(result[result.length-1]);
 		if(!m2.find())
 		{
@@ -511,7 +513,7 @@ public class TelnetClientWrapper
 	private void throwTimeoutException() throws ResponseTimeoutException
 	{
 		logger.info("response timeout");
-		//TODO change to throw IOException (Mule 3.x or later)
+		//FIXME change to throw IOException (Mule 3.x or later)
 		throw new ResponseTimeoutException(CoreMessages.createStaticMessage("TelnetTransport : response timeout"), command, dispatcher.getEndpoint());
 
 	}
