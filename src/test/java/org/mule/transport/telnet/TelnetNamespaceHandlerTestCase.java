@@ -43,6 +43,7 @@ public class TelnetNamespaceHandlerTestCase extends FunctionalTestCase
         OutboundEndpoint endpoint = (OutboundEndpoint) muleContext.getRegistry().lookupObject("telnet-out");
         
         assertEquals(Boolean.TRUE.toString(), endpoint.getProperty(TelnetNamespaceHandler.USE_SUDO));
+        assertEquals(Boolean.TRUE.toString(), endpoint.getProperty(TelnetNamespaceHandler.SUDO_STDIO_OPTION));
         
         //valid to replace from 'telnet="SEND"' to 'address="telnet://telnet.out"'
         assertEquals("telnet.out", endpoint.getEndpointURI().getAddress());

@@ -44,6 +44,7 @@ public class TelnetNamespaceHandler extends AbstractMuleNamespaceHandler
 	public static final String USE_SUDO = "useSudo";
 	public static final String WAIT_TIME= "waitTime";
 	public static final String ENCODING = "encoding";
+	public static final String SUDO_STDIO_OPTION = "sudoStdioOption";
 	
 	public static final String[] ENDPOINT_ATTRIBUTES = {
 		SUDO_PASSWORD, USE_SUDO, RESOPNSE_TIMEOUT, WAIT_TIME, ENCODING
@@ -52,7 +53,7 @@ public class TelnetNamespaceHandler extends AbstractMuleNamespaceHandler
 	public static final String[] ALL_ATTRIBUTES = {
 		HOST, PORT, LOGIN_ID, PASSWORD,
 		RESOPNSE_TIMEOUT, DEFAULT_TIMEOUT,
-		SUDO_PASSWORD, USE_SUDO
+		SUDO_PASSWORD, USE_SUDO, SUDO_STDIO_OPTION
 		};
 	
     public void init()
@@ -64,6 +65,7 @@ public class TelnetNamespaceHandler extends AbstractMuleNamespaceHandler
         registerStandardTransportEndpoints(TelnetConnector.TELNET, ADDRESS_ATTRIBUTES)
         	.addMapping(TELNET_ATTRIBUTE, MAPPINGS).addAlias(TELNET_ATTRIBUTE, URIBuilder.PATH)
         	.addAlias(USE_SUDO, USE_SUDO)
+        	.addAlias(SUDO_STDIO_OPTION, SUDO_STDIO_OPTION)
         	.addAlias(SUDO_PASSWORD, SUDO_PASSWORD)
         	.addAlias(WAIT_TIME, WAIT_TIME)
         	.addAlias(ENCODING, ENCODING)

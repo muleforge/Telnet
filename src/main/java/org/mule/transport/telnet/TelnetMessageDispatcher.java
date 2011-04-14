@@ -37,6 +37,7 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 	private String sudoPassword = null;
 	private int waitTime;
 	private TelnetClientWrapper client = null;
+	private final boolean sudoStdioOption;
 
 	/* For general guidelines on writing transports see
 	   http://mule.mulesource.org/display/MULE/Writing+Transports */
@@ -45,12 +46,15 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 	{
 		super(endpoint);
 
-		String prop = (String) endpoint.getProperty(TelnetNamespaceHandler.USE_SUDO);
-		setUseSudo((Boolean) Boolean.parseBoolean(prop));
+		String strUseSudo = (String) endpoint.getProperty(TelnetNamespaceHandler.USE_SUDO);
+		setUseSudo((Boolean) Boolean.parseBoolean(strUseSudo));
 		if(isUseSudo()){
 			setSudoPassword((String) endpoint.getProperty(TelnetNamespaceHandler.SUDO_PASSWORD));
 		}
 		setWaitTime(Integer.parseInt((String) endpoint.getProperty(TelnetNamespaceHandler.WAIT_TIME)));
+        
+		String strSudoStdioOption = (String) endpoint.getProperty(TelnetNamespaceHandler.SUDO_STDIO_OPTION);
+        sudoStdioOption = Boolean.parseBoolean(strSudoStdioOption);
 		//responseTimeout = endpoint.getResponseTimeout();
 		
 		/* IMPLEMENTATION NOTE: If you need a reference to the specific
@@ -123,6 +127,7 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 		String password = getConnector().getPassword();
 		int exitStatus = -10;
 
+		//TODO refactoring
 		MuleMessage message = buildMuleMessage(event.getMessageAsString(), -10, event.getMessage());
 
 		//it is supposed to enable local echo in this proccess.
@@ -136,7 +141,13 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 				Matcher matcher = pattern.matcher(command);
 				if(!matcher.find())
 				{
-					command = "sudo " + command;
+					if(isSudoStdioOption())
+					{
+						command = "sudo -S " + command;
+					}else
+					{
+						command = "sudo " + command;
+					}
 					message = event.getMessage();
 					message.setPayload(command);
 				}
@@ -259,6 +270,11 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 	{
 		this.useSudo =useSudo;
 	}
+	
+	public boolean isSudoStdioOption() {
+		return sudoStdioOption;
+	}
+
 	
     @Override
     public RetryContext validateConnection(RetryContext retryContext)

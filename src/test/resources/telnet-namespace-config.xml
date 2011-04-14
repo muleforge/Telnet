@@ -23,7 +23,7 @@
 			<echo-component/>
 			<outbound>
 				<pass-through-router>
-					<telnet:outbound-endpoint name="telnet-out" telnet="SEND" useSudo="true" sudoPassword="sudopwd"
+					<telnet:outbound-endpoint name="telnet-out" telnet="SEND" useSudo="true" sudoStdioOption="true" sudoPassword="sudopwd"
 					 synchronous="true" responseTimeout="15000" waitTime="0" encoding="euc-jp"/>
 				</pass-through-router>
 			</outbound>

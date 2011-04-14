@@ -146,5 +146,15 @@
 		</xsd:attribute>
 		<xsd:attribute name="waitTime" type="mule:substitutableInt" use="optional" default="2000">
 		</xsd:attribute>
+		<xsd:attribute name="sudoStdioOption" type="mule:substitutableBoolean"
+			use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation>
+					If you add sudo "-S" option, input password followed by a newline character.
+					false : input password without a newline character.
+					true : input password followed by a newline character.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
     </xsd:attributeGroup>
 </xsd:schema>
