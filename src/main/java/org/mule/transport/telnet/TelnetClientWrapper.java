@@ -77,6 +77,7 @@ public class TelnetClientWrapper
 		{
 			dispatcher.exceptionThrown(e);
 		}
+		//TODO enable LINEMODE
 		
 		client.connect(host, port);
 
@@ -118,11 +119,11 @@ public class TelnetClientWrapper
 
 		
 		logger.debug("attempt login : " + userId);
-		readStream(".*login: $");
+		readStream(".*login:\\s*$");
 
 		writeStream(userId + "\n");
 
-		readStream("(P|p)assword: $");
+		readStream("(P|p)assword:\\s*$");
 
 		writeStream(password + "\n");
 
@@ -160,7 +161,9 @@ public class TelnetClientWrapper
 		{
 			try
 			{
-				Thread.sleep(1000); // wait for running command
+				//TODO remove if LINEMODE is enabled.
+				// wait for running command
+				Thread.sleep(1000); 
 			}
 			catch (InterruptedException e)
 			{
@@ -186,7 +189,7 @@ public class TelnetClientWrapper
 				if (matcher.find())
 					break;
 				
-				// if seting responseTimeout to 0, timeout processing is disabled. 
+				// timeout processing is disabled if seting responseTimeout to 0. 
 				if(responseTimeout > 0 && (System.currentTimeMillis()- startTime  ) > responseTimeout)
 				{
 					logger.info("timeout : " + responseTimeout + " ms");
@@ -252,7 +255,7 @@ public class TelnetClientWrapper
 	 */
 	public String execCommand(MuleMessage _command) throws IOException, ResponseTimeoutException 
 	{
-		logger.trace("execute command {" + command +"}");
+		logger.trace("execute command {" + _command +"}");
 		String command;
 		try
 		{
@@ -264,6 +267,7 @@ public class TelnetClientWrapper
 			exception.setStackTrace(e.getStackTrace());
 			throw exception;
 		}
+		
 		this.command = _command;
 		String[] result = null;
 		StringBuilder sb = new StringBuilder();
@@ -290,6 +294,7 @@ public class TelnetClientWrapper
 		{
 			logger.trace("skip string - [" + result[result.length-1]+ "]");
 		}
+		
 		if(logger.isTraceEnabled()) 
 		{
 			logger.trace("command - " + command);
@@ -313,6 +318,7 @@ public class TelnetClientWrapper
 		}
 		catch (Exception e)
 		{
+			//TODO
 			IOException exception = new IOException("can't transform Object {" + _command + "}");
 			exception.setStackTrace(e.getStackTrace());
 			throw exception;
@@ -340,7 +346,7 @@ public class TelnetClientWrapper
 			if(logger.isTraceEnabled())
 				logger.trace("sudo result 1 : " + before.toString());
 			
-			if(result[result.length-1].matches(".*(Password:|パスワード:)"))
+			if(result[result.length-1].matches(".*(Password:\\s*|パスワード:\\s*)"))
 			{
 				logger.debug("send password");
 				result = send(password);
@@ -494,15 +500,6 @@ public class TelnetClientWrapper
 	public boolean isSuccesAuth()
 	{
 		return isLogined.get();
-	}
-
-	public boolean sendAYT() throws IllegalArgumentException, IOException, InterruptedException
-	{
-		if(client.isConnected())
-		{
-			return client.sendAYT(5000);
-		}
-		return false;
 	}
 	
 	public int getWaitTime()

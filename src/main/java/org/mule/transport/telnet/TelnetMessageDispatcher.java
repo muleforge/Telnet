@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.net.telnet.TelnetClient;
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
@@ -36,7 +37,7 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 	private boolean useSudo = false;
 	private String sudoPassword = null;
 	private int waitTime;
-	private TelnetClientWrapper client = null;
+//	private TelnetClientWrapper client = null;
 	private final boolean sudoStdioOption;
 
 	/* For general guidelines on writing transports see
@@ -55,6 +56,7 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
         
 		String strSudoStdioOption = (String) endpoint.getProperty(TelnetNamespaceHandler.SUDO_STDIO_OPTION);
         sudoStdioOption = Boolean.parseBoolean(strSudoStdioOption);
+        
 		//responseTimeout = endpoint.getResponseTimeout();
 		
 		/* IMPLEMENTATION NOTE: If you need a reference to the specific
@@ -65,33 +67,16 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 
 	public void doConnect() throws Exception
 	{
-		/* IMPLEMENTATION NOTE: Makes a connection to the underlying
-		   resource. Where connections are managed by the connector this
-		   method may do nothing */
-
-		// If a resource for this Dispatcher needs a connection established,
-		// then this is the place to do it
 
 	}
 
 	public void doDisconnect() throws Exception
 	{
-		/* IMPLEMENTATION NOTE: Disconnect any conections made in the connect
-		   method */
-
-		// If the connect method did not do anything then this method
-		// shouldn't do anything either
 
 	}
 
 	public void doDispatch(MuleEvent event) throws Exception
 	{
-		/* IMPLEMENTATION NOTE: This is invoked when the endpoint is
-		   asynchronous.  It should invoke the transport but not return any
-		   result.  If a result is returned it should be ignorred, but if the
-		   underlying transport does have a notion of asynchronous processing,
-		   that should be invoked.  This method is executed in a different
-		   thread to the request thread. */
 
 		// TODO Write the client code here to dispatch the event over this
 		// transport
@@ -102,13 +87,6 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 
 	public MuleMessage doSend(MuleEvent event) throws Exception
 	{
-		/* IMPLEMENTATION NOTE: Should send the event payload over the
-		   transport. If there is a response from the transport it shuold be
-		   returned from this method. The sendEvent method is called when the
-		   endpoint is running synchronously and any response returned will
-		   ultimately be passed back to the callee. This method is executed in
-		   the same thread as the request thread. */
-
 		// TODO Write the client code here to send the event over this
 		// transport (or to dispatch the event to a store or repository)
 
@@ -118,7 +96,7 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 		String host = getConnector().getHost();
 		int port = getConnector().getPort();
 		logger.debug("connect : "+  host +":" + port);
-		this.client = new TelnetClientWrapper(host, port, this, getWaitTime());
+		TelnetClientWrapper client = new TelnetClientWrapper(host, port, this, getWaitTime());
 		
 		String result = "";
 		
@@ -128,7 +106,7 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 		int exitStatus = -10;
 
 		//TODO refactoring
-		MuleMessage message = buildMuleMessage(event.getMessageAsString(), -10, event.getMessage());
+		MuleMessage message = buildMuleMessage(event.getMessageAsString(), exitStatus, event.getMessage());
 
 		//it is supposed to enable local echo in this proccess.
 		try{
@@ -199,6 +177,13 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 		   disposed and should clean up any open resources. */
 	}
 
+	/**
+	 * 
+	 * @param payload
+	 * @param exitStatus
+	 * @param origilanMessage
+	 * @return MuleMessage. This payload is a String that last new-line character is removed. 
+	 */
 	private MuleMessage buildMuleMessage(String payload, int exitStatus,
 			MuleMessage origilanMessage)
 	{
@@ -282,8 +267,18 @@ public class TelnetMessageDispatcher extends AbstractMessageDispatcher
 
         try
         {
-        	client.sendAYT();;
-        	retryContext.setOk();
+    		String host = getConnector().getHost();
+    		int port = getConnector().getPort();
+    		TelnetClient client = new TelnetClient();
+    		client.connect(host, port);
+        	boolean b = client.sendAYT(2000);
+        	
+        	if(b)
+        	{
+        		retryContext.setOk();
+        	} else {
+        		retryContext.setFailed(new IOException("sendAYT is false."));
+        	}
         }
         catch(Exception e)
         {

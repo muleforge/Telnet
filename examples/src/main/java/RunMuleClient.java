@@ -75,7 +75,7 @@ public class RunMuleClient implements Runnable
 			
 			for(int i=0; i<MAX; i++)
 			{
-				responses.add( client.send("vm://test", "echo hello world!", properties));
+				responses.add( client.send("vm://test", "sudo -S echo hello world!", properties));
 			}
 			
 		}catch(MuleException e){
